@@ -670,8 +670,8 @@ const updateParams = res => {
     return '';
   }
   // 检查 content 是否为数组，并提取文本
-  let content = Array.isArray(message.content) 
-    ? message.content[0]?.text || '' 
+    let content = Array.isArray(message.content) 
+    ? message.content.map(item => item?.text || '').join(' ') 
     : message.content;
   
   if (content.length < 1) {
