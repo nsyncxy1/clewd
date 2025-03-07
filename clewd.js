@@ -665,28 +665,29 @@ const updateParams = res => {
                             systems = systemMessages.filter((message => !message.discard)).map((message => `"${message.content.substring(0, 25).replace(/\n/g, '\\n').trim()}..."`));
                             messagesClone.forEach((message => message.discard = message.discard || mergedLogs.includes(message) && ![ lastUser ].includes(message)));
                         }
-                        const prompt = messagesClone.map(((message, idx) => {
-                            if (message.merged || message.discard) {
-                                return '';
-                            }
-                            let content = Array.isArray(message.content) 
-                                ? message.content[0]?.text || '' : message.content;
-                            if (message.content.length < 1) {
-                                return message.content;
-                            }
-                            let spacing = '';
-/******************************** */
-                            if (Config.Settings.xmlPlot) {
-                                idx > 0 && (spacing = '\n\n');
-                                const prefix = message.customname ? message.role + ': ' + message.name.replaceAll('_', ' ') + ': ' : 'system' !== message.role || message.name ? Replacements[message.name || message.role] + ': ' : 'xmlPlot: ' + Replacements[message.role];
-                                return `${spacing}${message.strip ? '' : prefix}${message.content}`;
-                            } else {
-/******************************** */
-                                idx > 0 && (spacing = systemMessages.includes(message) ? '\n' : '\n\n');
-                                const prefix = message.customname ? message.name.replaceAll('_', ' ') + ': ' : 'system' !== message.role || message.name ? Replacements[message.name || message.role] + ': ' : '' + Replacements[message.role];
-                                return `${spacing}${message.strip ? '' : prefix}${'system' === message.role ? message.content : message.content.trim()}`;
-                            } //
-                        }));
+                        const prompt = messagesClone.map((message, idx) => {
+  if (message.merged || message.discard) {
+    return '';
+  }
+  // 检查 content 是否为数组，并提取文本
+  let content = Array.isArray(message.content) 
+    ? message.content[0]?.text || '' 
+    : message.content;
+  
+  if (content.length < 1) {
+    return content;
+  }
+  let spacing = '';
+  if (Config.Settings.xmlPlot) {
+    idx > 0 && (spacing = '\n\n');
+    const prefix = message.customname ? message.role + ': ' + message.name.replaceAll('_', ' ') + ': ' : 'system' !== message.role || message.name ? Replacements[message.name || message.role] + ': ' : 'xmlPlot: ' + Replacements[message.role];
+    return `${spacing}${message.strip ? '' : prefix}${content}`;
+  } else {
+    idx > 0 && (spacing = systemMessages.includes(message) ? '\n' : '\n\n');
+    const prefix = message.customname ? message.name.replaceAll('_', ' ') + ': ' : 'system' !== message.role || message.name ? Replacements[message.name || message.role] + ': ' : '' + Replacements[message.role];
+    return `${spacing}${message.strip ? '' : prefix}${'system' === message.role ? content : content.trim()}`;
+  }
+});
                         return {
                             prompt: prompt.join(''), //genericFixes(prompt.join('')).trim(),
                             systems
