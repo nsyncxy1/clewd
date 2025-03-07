@@ -669,6 +669,8 @@ const updateParams = res => {
                             if (message.merged || message.discard) {
                                 return '';
                             }
+                            let content = Array.isArray(message.content) 
+                                ? message.content[0]?.text || '' : message.content;
                             if (message.content.length < 1) {
                                 return message.content;
                             }
